@@ -3,7 +3,7 @@ const axios = require('axios');
 /**
  * Summarizes text using Groq's Completion API
  * @param {string} text - The meeting transcript to summarize
- * @returns {Promise<string>} A 3-word summary of the meeting transcript
+ * @returns {Promise<string>} A 3-line summary of the meeting transcript
  */
 async function summarizeText(text) {
   try {
@@ -28,7 +28,7 @@ async function summarizeText(text) {
           }
         ],
         temperature: 0.3, // Lower temperature for more consistent, focused output
-        max_tokens: 20    // Reduced since we only need 3 words
+        max_tokens: 200   // Increased to accommodate 3 lines
       },
       {
         headers: {
@@ -38,16 +38,16 @@ async function summarizeText(text) {
       }
     );
 
-    // Extract the summary from the API response and ensure it's exactly 3 words
+    // Extract the summary from the API response and ensure it's exactly 3 lines
     let summary = response.data.choices[0].message.content.trim();
     
-    // Remove any introductory phrases or punctuation
-    summary = summary.replace(/^[^a-zA-Z0-9]+/, ''); // Remove leading non-alphanumeric chars
+    // Remove any introductory phrases or punctuation at the beginning
+    summary = summary.replace(/^[^a-zA-Z0-9]+/, ''); 
     
-    // Split by spaces and ensure we take only 3 words
-    const words = summary.split(/\s+/).filter(word => word.length > 0);
-    if (words.length >= 3) {
-      summary = words.slice(0, 3).join(' ');
+    // Split by newlines and ensure we take only 3 lines
+    const lines = summary.split(/\n+/).filter(line => line.trim().length > 0);
+    if (lines.length >= 3) {
+      summary = lines.slice(0, 3).join('\n');
     }
     
     return summary;

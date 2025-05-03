@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Transcript Summarizer</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <h1>Meeting Transcript Summarizer</h1>
+  
+  <div class="tabs">
+    <div class="tab active" onclick="openTab(event, 'textTab')">Text Input</div>
+    <div class="tab" onclick="openTab(event, 'fileTab')">File Upload</div>
+  </div>
+
+  <div id="textTab" class="tab-content active">
+    <h3>Enter Meeting Transcript</h3>
+    <form id="summaryForm">
+      <textarea id="transcript" placeholder="Paste your meeting transcript here..."></textarea>
+      <button type="submit">Generate Summary</button>
+    </form>
+  </div>
+
+  <div id="fileTab" class="tab-content">
+    <h3>Upload Meeting Transcript File</h3>
+    <form id="fileUploadForm" enctype="multipart/form-data">
+      <div class="file-upload">
+        <input type="file" id="file" name="file">
+        <div id="supportedTypes" class="supported-types"></div>
+      </div>
+      <button type="submit">Upload and Summarize</button>
+    </form>
+    <div id="fileProcessing" class="loading">Processing file...</div>
+  </div>
+
+  <div id="result"></div>
+  
+  <div id="actionButtons" class="action-buttons">
+    <div class="tooltip">
+      <button id="copyBtn" class="copy-btn">Copy Summary</button>
+      <span class="tooltiptext" id="copyTooltip">Copy to clipboard</span>
+    </div>
+    <button id="downloadBtn" class="download-btn">Download Summary</button>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

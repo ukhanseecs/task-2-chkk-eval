@@ -1,0 +1,125 @@
+body { 
+  font-family: Arial, sans-serif; 
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 20px; 
+}
+
+textarea { 
+  width: 100%; 
+  height: 200px; 
+  margin-bottom: 10px; 
+  padding: 10px; 
+}
+
+button { 
+  padding: 10px 20px; 
+  background-color: #4CAF50; 
+  color: white; 
+  border: none; 
+  cursor: pointer; 
+  margin-right: 10px; 
+}
+
+#result { 
+  margin-top: 20px; 
+  padding: 10px; 
+  border: 1px solid #ddd; 
+}
+
+.tab { 
+  cursor: pointer; 
+  padding: 10px 20px; 
+  display: inline-block; 
+  border: 1px solid #ccc; 
+  background-color: #f1f1f1; 
+}
+
+.tab.active { 
+  background-color: #ccc; 
+}
+
+.tab-content { 
+  display: none; 
+  padding: 20px; 
+  border: 1px solid #ccc; 
+  border-top: none; 
+}
+
+.tab-content.active { 
+  display: block; 
+}
+
+.file-upload { 
+  margin: 20px 0; 
+}
+
+.loading { 
+  display: none; 
+  margin-top: 10px; 
+}
+
+.error { 
+  color: red; 
+}
+
+.supported-types { 
+  color: #666; 
+  font-size: 14px; 
+  margin-top: 5px; 
+}
+
+.action-buttons { 
+  margin-top: 15px; 
+  display: none; 
+}
+
+.action-buttons button { 
+  margin-right: 10px; 
+}
+
+.copy-btn { 
+  background-color: #2196F3; 
+}
+
+.download-btn { 
+  background-color: #ff9800; 
+}
+
+.tooltip { 
+  position: relative; 
+  display: inline-block; 
+}
+
+.tooltip .tooltiptext { 
+  visibility: hidden; 
+  width: 140px; 
+  background-color: #555; 
+  color: #fff; 
+  text-align: center; 
+  border-radius: 6px; 
+  padding: 5px; 
+  position: absolute; 
+  z-index: 1; 
+  bottom: 150%; 
+  left: 50%; 
+  margin-left: -75px; 
+  opacity: 0; 
+  transition: opacity 0.3s; 
+}
+
+.tooltip .tooltiptext::after { 
+  content: ""; 
+  position: absolute; 
+  top: 100%; 
+  left: 50%; 
+  margin-left: -5px; 
+  border-width: 5px; 
+  border-style: solid; 
+  border-color: #555 transparent transparent transparent; 
+}
+
+.tooltip.show .tooltiptext { 
+  visibility: visible; 
+  opacity: 1; 
+}

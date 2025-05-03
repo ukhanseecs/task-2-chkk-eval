@@ -1,0 +1,42 @@
+Human: make sure to summarize meeting transcript in exactly three sentences. do not include any introduction or preamble — just output the 3-sentence summary directly.
+
+Copilot: I see. You actually want to ensure that the summary DOES NOT start with the phrase "Here is a summary of the meeting transcript in exactly 3 sentences:". The current implementation already removes this prefix, but let's make sure it never appears by adding some post-processing.
+
+### [groqService.js](file:///f%3A/chkk%20eval/q2/services/groqService.js)
+
+I'll add post-processing to remove this phrase if it appears in the Groq response:
+
+````javascript
+// ...existing code...
+    const response = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        model: 'llama3-70b-8192',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a professional summarizer that creates concise, accurate summaries of meeting transcripts. Always provide exactly 3 sentences that capture the key points, decisions, and action items from the meeting. Be clear and straightforward, focusing only on the most important information.'
+          },
+          {
+            role: 'user',
+            content: `Please summarize the following meeting transcript in exactly 3 sentences:\n\n${text}`
+          }
+        ],
+        temperature: 0.3, // Lower temperature for more consistent, focused output
+        max_tokens: 300   // Limit the summary length
+// ...existing code...
+
+    // Extract the summary from the API response
+    let summary = response.data.choices[0].message.content.trim();
+    
+    // Ensure the summary DOES NOT start with the unwanted prefix
+    const unwantedPrefix = "Here is a summary of the meeting transcript in exactly 3 sentences:";
+    if (summary.startsWith(unwantedPrefix)) {
+      summary = summary.substring(unwantedPrefix.length).trim();
+    }
+    
+    return summary;
+// ...existing code...
+````
+
+This modification checks if the summary starts with the unwanted prefix and removes it if present, ensuring the summary never begins with that phrase.

@@ -9,7 +9,7 @@ A Node.js service that generates 3-sentence summaries of meeting transcripts usi
 - Copy and download functionality for generated summaries
 - RESTful API endpoint for programmatic access
 - 3-sentence summaries of meeting transcripts
-- Uses Groq's advanced LLama3-70B model for high-quality summaries
+- Uses Groq's advanced Llama 3 70B model for high-quality summaries
 
 ## Setup
 
@@ -90,7 +90,7 @@ The service includes comprehensive error handling for:
 - Node.js
 - Express.js
 - Multer (for file uploads)
-- PDF-Parse (for PDF extraction)
-- DOCX-Parser (for Word document extraction)
-- Groq Completion API (LLama3-70B model)
+- pdf-parse (for PDF extraction)
+- mammoth (for Word document extraction)
+- Groq Completion API (Llama 3 70B model)
 - Axios for HTTP requests

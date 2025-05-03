@@ -4,7 +4,8 @@ A Node.js service that generates 3-sentence summaries of meeting transcripts usi
 
 ## Features
 
-- Web form for submitting meeting transcripts
+- Web form for submitting meeting transcripts (text input or file upload)
+- File upload support for documents (PDF, DOCX, and TXT files)
 - RESTful API endpoint for programmatic access
 - 3-sentence summaries of meeting transcripts
 - Uses Groq's advanced LLama3-70B model for high-quality summaries
@@ -28,11 +29,11 @@ A Node.js service that generates 3-sentence summaries of meeting transcripts usi
 
 ## API Usage
 
-### Endpoint
+### Text Summarization Endpoint
 
 `POST /api/summarize`
 
-### Request Body
+#### Request Body
 
 ```json
 {
@@ -40,7 +41,24 @@ A Node.js service that generates 3-sentence summaries of meeting transcripts usi
 }
 ```
 
-### Response
+#### Response
+
+```json
+{
+  "summary": "Three-sentence summary of the meeting transcript."
+}
+```
+
+### File Upload Summarization Endpoint
+
+`POST /api/summarize/file`
+
+#### Request
+
+Send a multipart/form-data request with a `file` field containing the document to summarize.
+Supported file types: PDF, DOCX, TXT
+
+#### Response
 
 ```json
 {
@@ -50,13 +68,18 @@ A Node.js service that generates 3-sentence summaries of meeting transcripts usi
 
 ## Web Interface
 
-The service provides a simple web interface at the root URL (`/`) where users can paste meeting transcripts and get summaries.
+The service provides a simple web interface at the root URL (`/`) where users can:
+- Paste meeting transcripts directly
+- Upload document files (PDF, DOCX, TXT)
+- View generated summaries
 
 ## Error Handling
 
 The service includes comprehensive error handling for:
 - Missing API keys
 - Invalid input
+- Unsupported file types
+- File size limitations (10MB max)
 - API rate limits and errors
 - Network issues
 
@@ -64,5 +87,8 @@ The service includes comprehensive error handling for:
 
 - Node.js
 - Express.js
+- Multer (for file uploads)
+- PDF-Parse (for PDF extraction)
+- DOCX-Parser (for Word document extraction)
 - Groq Completion API (LLama3-70B model)
 - Axios for HTTP requests

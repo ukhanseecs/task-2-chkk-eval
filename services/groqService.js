@@ -1,4 +1,6 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Summarizes text using Groq's Completion API
@@ -7,10 +9,21 @@ const axios = require('axios');
  */
 async function summarizeText(text) {
   try {
-    const apiKey = process.env.GROQ_API_KEY;
+    // Try to get API key from environment variables first
+    let apiKey = process.env.GROQ_API_KEY;
+    
+    // If not found in env variables, try to load from env folder
+    if (!apiKey) {
+      try {
+        const envFilePath = path.join(__dirname, '..', 'env', 'groq_api_key.txt');
+        apiKey = fs.readFileSync(envFilePath, 'utf8').trim();
+      } catch (fileError) {
+        console.error('Failed to read API key from env folder:', fileError.message);
+      }
+    }
     
     if (!apiKey) {
-      throw new Error('Groq API key is missing. Please set the GROQ_API_KEY environment variable.');
+      throw new Error('Groq API key is missing. Please set the GROQ_API_KEY environment variable or add it to the env folder.');
     }
 
     const response = await axios.post(

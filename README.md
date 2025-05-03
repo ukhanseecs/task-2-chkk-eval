@@ -6,6 +6,7 @@ A Node.js service that generates 3-sentence summaries of meeting transcripts usi
 
 - Web form for submitting meeting transcripts (text input or file upload)
 - File upload support for documents (PDF, DOCX, and TXT files)
+- Copy and download functionality for generated summaries
 - RESTful API endpoint for programmatic access
 - 3-sentence summaries of meeting transcripts
 - Uses Groq's advanced LLama3-70B model for high-quality summaries
@@ -72,6 +73,7 @@ The service provides a simple web interface at the root URL (`/`) where users ca
 - Paste meeting transcripts directly
 - Upload document files (PDF, DOCX, TXT)
 - View generated summaries
+- Copy and download generated summaries
 
 ## Error Handling
 

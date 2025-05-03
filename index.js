@@ -74,6 +74,14 @@ app.get('/', (req, res) => {
           .loading { display: none; margin-top: 10px; }
           .error { color: red; }
           .supported-types { color: #666; font-size: 14px; margin-top: 5px; }
+          .action-buttons { margin-top: 15px; display: none; }
+          .action-buttons button { margin-right: 10px; }
+          .copy-btn { background-color: #2196F3; }
+          .download-btn { background-color: #ff9800; }
+          .tooltip { position: relative; display: inline-block; }
+          .tooltip .tooltiptext { visibility: hidden; width: 140px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 1; bottom: 150%; left: 50%; margin-left: -75px; opacity: 0; transition: opacity 0.3s; }
+          .tooltip .tooltiptext::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent; }
+          .tooltip.show .tooltiptext { visibility: visible; opacity: 1; }
         </style>
       </head>
       <body>
@@ -105,8 +113,18 @@ app.get('/', (req, res) => {
         </div>
 
         <div id="result"></div>
+        
+        <div id="actionButtons" class="action-buttons">
+          <div class="tooltip">
+            <button id="copyBtn" class="copy-btn">Copy Summary</button>
+            <span class="tooltiptext" id="copyTooltip">Copy to clipboard</span>
+          </div>
+          <button id="downloadBtn" class="download-btn">Download Summary</button>
+        </div>
 
         <script>
+          let currentSummary = "";
+          
           function openTab(evt, tabName) {
             const tabContents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < tabContents.length; i++) {
@@ -122,18 +140,55 @@ app.get('/', (req, res) => {
             evt.currentTarget.classList.add("active");
           }
           
+          // Copy summary to clipboard
+          document.getElementById('copyBtn').addEventListener('click', () => {
+            if (!currentSummary) return;
+            
+            navigator.clipboard.writeText(currentSummary).then(() => {
+              const tooltip = document.getElementById("copyTooltip");
+              tooltip.textContent = "Copied!";
+              const tooltipContainer = document.querySelector(".tooltip");
+              tooltipContainer.classList.add("show");
+              
+              setTimeout(() => {
+                tooltipContainer.classList.remove("show");
+                setTimeout(() => {
+                  tooltip.textContent = "Copy to clipboard";
+                }, 300);
+              }, 2000);
+            });
+          });
+          
+          // Download summary as text file
+          document.getElementById('downloadBtn').addEventListener('click', () => {
+            if (!currentSummary) return;
+            
+            const blob = new Blob([currentSummary], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'meeting-summary.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
+          
           // Text input form submission
           document.getElementById('summaryForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const transcript = document.getElementById('transcript').value;
             const resultDiv = document.getElementById('result');
+            const actionButtons = document.getElementById('actionButtons');
             
             if (!transcript.trim()) {
               resultDiv.innerHTML = '<p class="error">Please enter a transcript.</p>';
+              actionButtons.style.display = 'none';
               return;
             }
             
             resultDiv.innerHTML = '<p>Generating summary...</p>';
+            actionButtons.style.display = 'none';
             
             try {
               const response = await fetch('/api/summarize', {
@@ -145,12 +200,16 @@ app.get('/', (req, res) => {
               const data = await response.json();
               
               if (response.ok) {
+                currentSummary = data.summary;
                 resultDiv.innerHTML = '<h3>Summary:</h3><p>' + data.summary.replace(/\\n/g, '<br>') + '</p>';
+                actionButtons.style.display = 'block';
               } else {
                 resultDiv.innerHTML = '<p class="error">Error: ' + (data.error || 'Unknown error') + '</p>';
+                actionButtons.style.display = 'none';
               }
             } catch (error) {
               resultDiv.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+              actionButtons.style.display = 'none';
             }
           });
           
@@ -160,9 +219,11 @@ app.get('/', (req, res) => {
             const fileInput = document.getElementById('file');
             const resultDiv = document.getElementById('result');
             const processingDiv = document.getElementById('fileProcessing');
+            const actionButtons = document.getElementById('actionButtons');
             
             if (!fileInput.files || fileInput.files.length === 0) {
               resultDiv.innerHTML = '<p class="error">Please select a file.</p>';
+              actionButtons.style.display = 'none';
               return;
             }
             
@@ -171,6 +232,7 @@ app.get('/', (req, res) => {
             
             resultDiv.innerHTML = '';
             processingDiv.style.display = 'block';
+            actionButtons.style.display = 'none';
             
             try {
               const response = await fetch('/api/summarize/file', {
@@ -181,12 +243,16 @@ app.get('/', (req, res) => {
               const data = await response.json();
               
               if (response.ok) {
+                currentSummary = data.summary;
                 resultDiv.innerHTML = '<h3>Summary:</h3><p>' + data.summary.replace(/\\n/g, '<br>') + '</p>';
+                actionButtons.style.display = 'block';
               } else {
                 resultDiv.innerHTML = '<p class="error">Error: ' + (data.error || 'Unknown error') + '</p>';
+                actionButtons.style.display = 'none';
               }
             } catch (error) {
               resultDiv.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+              actionButtons.style.display = 'none';
             } finally {
               processingDiv.style.display = 'none';
               fileInput.value = ''; // Reset the file input

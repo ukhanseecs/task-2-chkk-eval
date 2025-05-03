@@ -3,7 +3,7 @@ const axios = require('axios');
 /**
  * Summarizes text using Groq's Completion API
  * @param {string} text - The meeting transcript to summarize
- * @returns {Promise<string>} A 3-sentence summary of the meeting transcript
+ * @returns {Promise<string>} A 3-word summary of the meeting transcript
  */
 async function summarizeText(text) {
   try {
@@ -20,15 +20,15 @@ async function summarizeText(text) {
         messages: [
           {
             role: 'system',
-            content: 'You are a professional summarizer that creates concise, accurate summaries of meeting transcripts. Always provide exactly 3 sentences that capture the key points, decisions, and action items from the meeting. Be clear and straightforward, focusing only on the most important information.'
+            content: 'You are a professional summarizer. Your task is to distill meeting transcripts into exactly 3 lines that capture the essence of the meeting. Do not include any introductory phrases or explanations - respond with ONLY the 3 lines.'
           },
           {
             role: 'user',
-            content: `Please summarize the following meeting transcript in exactly 3 sentences:\n\n${text}`
+            content: `Summarize this meeting transcript in exactly 3 lines. Provide ONLY the 3 lines with no additional text:\n\n${text}`
           }
         ],
         temperature: 0.3, // Lower temperature for more consistent, focused output
-        max_tokens: 300   // Limit the summary length
+        max_tokens: 20    // Reduced since we only need 3 words
       },
       {
         headers: {
@@ -38,8 +38,18 @@ async function summarizeText(text) {
       }
     );
 
-    // Extract the summary from the API response
-    const summary = response.data.choices[0].message.content.trim();
+    // Extract the summary from the API response and ensure it's exactly 3 words
+    let summary = response.data.choices[0].message.content.trim();
+    
+    // Remove any introductory phrases or punctuation
+    summary = summary.replace(/^[^a-zA-Z0-9]+/, ''); // Remove leading non-alphanumeric chars
+    
+    // Split by spaces and ensure we take only 3 words
+    const words = summary.split(/\s+/).filter(word => word.length > 0);
+    if (words.length >= 3) {
+      summary = words.slice(0, 3).join(' ');
+    }
+    
     return summary;
   } catch (error) {
     console.error('Error calling Groq API:', error.message);

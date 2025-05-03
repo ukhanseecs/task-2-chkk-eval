@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 
 /**
  * Summarizes text using Groq's Completion API
@@ -12,13 +13,28 @@ async function summarizeText(text) {
     // Try to get API key from environment variables first
     let apiKey = process.env.GROQ_API_KEY;
     
-    // If not found in env variables, try to load from env folder
+    // If not found in env variables, try to load from .env file in env folder
+    if (!apiKey) {
+      try {
+        const envFilePath = path.join(__dirname, '..', 'env', '.env');
+        if (fs.existsSync(envFilePath)) {
+          const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
+          apiKey = envConfig.GROQ_API_KEY;
+        }
+      } catch (fileError) {
+        console.error('Failed to read API key from env/.env file:', fileError.message);
+      }
+    }
+    
+    // Try additional known locations if still no API key
     if (!apiKey) {
       try {
         const envFilePath = path.join(__dirname, '..', 'env', 'groq_api_key.txt');
-        apiKey = fs.readFileSync(envFilePath, 'utf8').trim();
+        if (fs.existsSync(envFilePath)) {
+          apiKey = fs.readFileSync(envFilePath, 'utf8').trim();
+        }
       } catch (fileError) {
-        console.error('Failed to read API key from env folder:', fileError.message);
+        console.error('Failed to read API key from groq_api_key.txt:', fileError.message);
       }
     }
     
